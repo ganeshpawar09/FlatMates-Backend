@@ -13,7 +13,7 @@ userRouter.route("/verify-otp").post(verify);
 userRouter.route("/logout").post(verifyAccessToken, logout);
 
 userRouter.get("/access-token-verify", verifyAccessToken, (req, res) => {
-  return res.json(new ApiResponse(201, "Access Token is Valid", req.user));
+  return res.json(new ApiResponse(201, req.user, "Access Token is Valid"));
 });
 
 export default userRouter;

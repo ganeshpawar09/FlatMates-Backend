@@ -18,6 +18,10 @@ app.use(express.static("public"));
 
 app.use(cookieParser());
 
+app.get("/", (req, res) => {
+  res.send("Hello, world!");
+});
+
 //routes imports
 import userRouter from "./routes/user.route.js";
 import flatRouter from "./routes/flat.route.js";

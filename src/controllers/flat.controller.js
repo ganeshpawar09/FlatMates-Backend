@@ -164,6 +164,8 @@ const addFlatToFavourite = asyncHandler(async (req, res) => {
 const removeFlatFromFavourite = asyncHandler(async (req, res) => {
   const { userId, flatId } = req.body;
 
+  console.log(flatId);
+
   if (!userId || !flatId) {
     throw new ApiError(400, "userId and flatId is required");
   }
@@ -174,14 +176,16 @@ const removeFlatFromFavourite = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User Not Found");
   }
 
-  if (!user.favouriteFlats.includes(flatId)) {
+  const indexOfFlat = user.favouriteFlats.indexOf(flatId);
+
+  if (indexOfFlat === -1) {
     return res
       .status(200)
       .json(new ApiResponse(200, "Flat is not in the favorite list"));
   }
-  user.favouriteFlats = user.favouriteFlats.filter(
-    (element) => element._id !== flatId
-  );
+
+  // Remove the flatId from the favouriteFlats array
+  user.favouriteFlats.splice(indexOfFlat, 1);
   await user.save();
 
   return res

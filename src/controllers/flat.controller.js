@@ -214,11 +214,12 @@ const fetchFavouriteFlat = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(404, "User Not Found");
   }
+
   const favFlats = [];
   flats.forEach((element) => {
     if (user.favouriteFlats.includes(element._id)) {
       element.favourite = true;
-      favFlats.add(element);
+      favFlats.push(element);
     } else {
       element.favourite = false;
     }
@@ -226,6 +227,7 @@ const fetchFavouriteFlat = asyncHandler(async (req, res) => {
 
   return res.status(200).json(new ApiResponse(200, favFlats, "Success"));
 });
+
 export {
   uploadFlat,
   updateFlat,

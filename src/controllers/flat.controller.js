@@ -188,7 +188,8 @@ const removeFlatFromFavourite = asyncHandler(async (req, res) => {
 });
 
 const fetchFlat = asyncHandler(async (req, res) => {
-  const { userId } = req.body;
+  const userId = req.header("userId");
+  console.log(userId);
   const user = await Users.findById(userId);
 
   const flats = await Flats.find();

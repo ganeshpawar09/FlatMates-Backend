@@ -159,6 +159,7 @@ const addFlatToFavourite = asyncHandler(async (req, res) => {
   }
   user.favouriteFlats.push(flatId);
   await user.save();
+  flat.favourite = true;
 
   return res
     .status(200)

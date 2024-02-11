@@ -197,9 +197,9 @@ const fetchFlat = asyncHandler(async (req, res) => {
   }
   flats.forEach((element) => {
     if (user.favouriteFlats.includes(element._id)) {
-      element.favorite = true;
+      element.favourite = true;
     } else {
-      element.favorite = false;
+      element.favourite = false;
     }
   });
 

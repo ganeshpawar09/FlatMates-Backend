@@ -23,6 +23,6 @@ flatRouter
 flatRouter
   .route("/remove-flat-from-favourite")
   .post(verifyAccessToken, removeFlatFromFavourite);
-flatRouter.route("/fetch-flat").get(verifyAccessToken, fetchFlat);
+flatRouter.route("/fetch-flat").post(verifyAccessToken, fetchFlat);
 
 export default flatRouter;

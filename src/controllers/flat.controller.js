@@ -188,7 +188,20 @@ const removeFlatFromFavourite = asyncHandler(async (req, res) => {
 });
 
 const fetchFlat = asyncHandler(async (req, res) => {
+  const { userId } = req.body;
+  const user = await Users.findById(userId);
+
   const flats = await Flats.find();
+  if (!user) {
+    throw new ApiError(404, "User Not Found");
+  }
+  flats.forEach((element) => {
+    if (user.favouriteFlats.includes(element._id)) {
+      element.favorite = true;
+    } else {
+      element.favorite = false;
+    }
+  });
 
   return res.status(200).json(new ApiResponse(200, flats, "Success"));
 });

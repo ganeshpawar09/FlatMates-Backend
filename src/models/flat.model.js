@@ -73,6 +73,9 @@
           type: Boolean,
           required: true,
         },
+        favorite: {
+          type: Boolean,
+        },
         currentFlatmates: {
           type: Number,
           required: true,

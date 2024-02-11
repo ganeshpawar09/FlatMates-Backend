@@ -153,12 +153,16 @@ const addFlatToFavourite = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, "Flat is already in the favorite list"));
   }
+  const flat = await Flats.findById(flatId);
+  if (!flat) {
+    throw new ApiError(404, "Flat Not Found");
+  }
   user.favouriteFlats.push(flatId);
   await user.save();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Flat Successfully added to favorite"));
+    .json(new ApiResponse(200, flat, "Flat Successfully added to favorite"));
 });
 
 const removeFlatFromFavourite = asyncHandler(async (req, res) => {

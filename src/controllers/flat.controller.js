@@ -180,7 +180,7 @@ const removeFlatFromFavourite = asyncHandler(async (req, res) => {
       .json(new ApiResponse(200, "Flat is not in the favorite list"));
   }
   user.favouriteFlats = user.favouriteFlats.filter(
-    (element) => element.id !== flatId
+    (element) => element._id !== flatId
   );
   await user.save();
 

@@ -3,6 +3,7 @@ import { verifyAccessToken } from "../middlewares/auth.middleware.js";
 import {
   addFlatToFavourite,
   deleteFlat,
+  fetchFavouriteFlat,
   fetchFlat,
   removeFlatFromFavourite,
   updateFlat,
@@ -24,6 +25,8 @@ flatRouter
   .route("/remove-flat-from-favourite")
   .post(verifyAccessToken, removeFlatFromFavourite);
 flatRouter.route("/fetch-flat").get(verifyAccessToken, fetchFlat);
-flatRouter.route("/fetch-favourite-flat").get(verifyAccessToken, fetchFlat);
+flatRouter
+  .route("/fetch-favourite-flat")
+  .get(verifyAccessToken, fetchFavouriteFlat);
 
 export default flatRouter;

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const roomSchema = new mongoose.Schema({
+const chatSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -15,4 +15,4 @@ const roomSchema = new mongoose.Schema({
   messages: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }],
 });
 
-export const Room = mongoose.model("Room", roomSchema);
+export const Chat = mongoose.model("Chat", chatSchema);

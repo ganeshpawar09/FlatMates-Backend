@@ -1,5 +1,4 @@
 import { Flat } from "../models/flat.model.js";
-import { Room } from "../models/room.model.js";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -283,10 +282,6 @@ const fetchFavouriteFlat = asyncHandler(async (req, res) => {
 
   return res.status(200).json(new ApiResponse(200, favFlats, "Success"));
 });
-
-
-
-
 
 export {
   uploadFlat,

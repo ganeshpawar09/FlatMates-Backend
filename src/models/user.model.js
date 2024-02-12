@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
       index: true,
       unique: true,
     },
-    rooms: [{ type: mongoose.Schema.Types.ObjectId, ref: "Room" }],
+    chats: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
     favouriteFlats: [{ type: Schema.Types.ObjectId, ref: "Flat" }],
     ownflats: [{ type: Schema.Types.ObjectId, ref: "Flat" }],
 

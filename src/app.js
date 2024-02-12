@@ -22,14 +22,7 @@ app.use(express.static("public"));
 
 app.use(cookieParser());
 
-// verify user AccessToken
-io.use((socket, next) => {
-  try {
-    verifyAccessToken(socket.handshake.query, null, next);
-  } catch (error) {
-    console.log("verify access token get issue");
-  }
-});
+
 // if user Access tokent
 io.on("connection", (socket) => {
   console.log(`User connected:${socket.id} `);

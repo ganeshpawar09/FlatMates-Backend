@@ -29,7 +29,8 @@ app.use(cookieParser());
 // if user Access tokent
 io.on("connection", (socket) => {
   console.log(`User connected:${socket.id} `);
-  // Your socket connection logic goes here
+
+  socket.emit("welcome", "Welcome ganesh");
 
   socket.on("disconnect", () => {
     console.log(`User disconnected: ${socket.id}`);

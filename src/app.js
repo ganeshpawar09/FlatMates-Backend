@@ -22,11 +22,13 @@ app.use(express.static("public"));
 
 app.use(cookieParser());
 
-
-
 // verify user AccessToken
 io.use((socket, next) => {
-  verifyAccessToken(socket.handshake.query, null, next);
+  try {
+    verifyAccessToken(socket.handshake.query, null, next);
+  } catch (error) {
+    console.log("verify access token get issue");
+  }
 });
 // if user Access tokent
 io.on("connection", (socket) => {
@@ -37,9 +39,6 @@ io.on("connection", (socket) => {
     console.log(`User disconnected: ${socket.id}`);
   });
 });
-
-
-
 
 //routes imports
 import userRouter from "./routes/user.route.js";

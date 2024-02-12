@@ -5,13 +5,10 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      require: true,
+      required: true,
       trim: true,
     },
-    gender: {
-      type: String,
-      require: true,
-    },
+
     phoneNumber: {
       type: String,
       required: true,

@@ -85,7 +85,6 @@ const verifyOtp = asyncHandler(async (req, res) => {
     user = await User.create({
       name: `User${phoneNumber.substring(3, 8)}`,
       phoneNumber,
-      gender,
       favouriteBooks: [],
       favouriteFlats: [],
       ownBooks: [],

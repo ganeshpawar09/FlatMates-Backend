@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { logout, sendOpt, verify } from "../controllers/user.controller.js";
 import { verifyAccessToken } from "../middlewares/auth.middleware.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
 
 const userRouter = Router();
 

@@ -63,11 +63,11 @@ const fetchChat = asyncHandler(async (req, res) => {
       return await Message.findById(messageId);
     });
 
-    const messages = await Promise.all(messagePromises);
+    const message = await Promise.all(messagePromises);
+    chat.messages = message;
 
     return {
       chat,
-      messages,
     };
   });
 

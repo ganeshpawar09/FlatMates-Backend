@@ -1,5 +1,5 @@
-import { Flats } from "../models/flat.model.js";
-import { Users } from "../models/user.model.js";
+import { Flat } from "../models/flat.model.js";
+import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -52,7 +52,7 @@ const uploadFlat = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Every field are required");
   }
 
-  const user = await Users.findById(ownerId);
+  const user = await User.findById(ownerId);
 
   if (!user) {
     throw new ApiError(404, "User Not Found");
@@ -68,7 +68,7 @@ const uploadFlat = asyncHandler(async (req, res) => {
   const uploadedFiles = await uploadOnCloudinary(localFilePaths);
   const photos = uploadedFiles.map((file) => file.url);
 
-  const newFlat = await Flats.create(req.body);
+  const newFlat = await Flat.create(req.body);
   newFlat.flatPhotos.push(...photos);
   await newFlat.save();
 
@@ -93,7 +93,7 @@ const updateFlat = asyncHandler(async (req, res) => {
     throw new ApiError(400, "flatId and ownerId is required to update flat");
   }
 
-  const updatedFlat = await Flats.findByIdAndUpdate(
+  const updatedFlat = await Flat.findByIdAndUpdate(
     { _id: flatId, ownerId: ownerId },
     updateData,
     {
@@ -117,7 +117,7 @@ const deleteFlat = asyncHandler(async (req, res) => {
     throw new ApiError(400, "ownerId and flatId is required");
   }
 
-  const deletedFlat = await Flats.findByIdAndDelete({
+  const deletedFlat = await Flat.findByIdAndDelete({
     _id: flatId,
     ownerId: ownerId,
   });
@@ -126,7 +126,7 @@ const deleteFlat = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Flat Not Found");
   }
 
-  await Users.findByIdAndUpdate(ownerId, {
+  await User.findByIdAndUpdate(ownerId, {
     $pull: { ownflats: deletedFlat._id },
   });
 
@@ -142,7 +142,7 @@ const addFlatToFavourite = asyncHandler(async (req, res) => {
     throw new ApiError(400, "userId and flatId is required");
   }
 
-  const user = await Users.findById(userId);
+  const user = await User.findById(userId);
 
   if (!user) {
     throw new ApiError(404, "User Not Found");
@@ -153,7 +153,7 @@ const addFlatToFavourite = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, "Flat is already in the favorite list"));
   }
-  const flat = await Flats.findById(flatId);
+  const flat = await Flat.findById(flatId);
   if (!flat) {
     throw new ApiError(404, "Flat Not Found");
   }
@@ -175,7 +175,7 @@ const removeFlatFromFavourite = asyncHandler(async (req, res) => {
     throw new ApiError(400, "userId and flatId is required");
   }
 
-  const user = await Users.findById(userId);
+  const user = await User.findById(userId);
 
   if (!user) {
     throw new ApiError(404, "User Not Found");
@@ -208,7 +208,7 @@ const fetchFlat = asyncHandler(async (req, res) => {
 
   const userId = req.header("userId");
 
-  const user = await Users.findById(userId);
+  const user = await User.findById(userId);
   let sort = 1;
   if (sortby == "hightolow") {
     sort = -1;
@@ -245,7 +245,7 @@ const fetchFlat = asyncHandler(async (req, res) => {
     $limit: limit,
   });
 
-  const result = await Flats.aggregate(pipeline);
+  const result = await Flat.aggregate(pipeline);
 
   if (!user) {
     throw new ApiError(404, "User Not Found");
@@ -263,9 +263,9 @@ const fetchFlat = asyncHandler(async (req, res) => {
 
 const fetchFavouriteFlat = asyncHandler(async (req, res) => {
   const userId = req.header("userId");
-  const user = await Users.findById(userId);
+  const user = await User.findById(userId);
 
-  const flats = await Flats.find();
+  const flats = await Flat.find();
   if (!user) {
     throw new ApiError(404, "User Not Found");
   }

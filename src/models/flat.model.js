@@ -92,4 +92,4 @@ const flatSchema = new Schema(
   { timestamps: true }
 );
 
-export const Flats = mongoose.model("flat", flatSchema);
+export const Flat = mongoose.model("Flat", flatSchema);

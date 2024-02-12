@@ -1,8 +1,12 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 const app = express();
+const server = createServer(app);
+const io = new Server(server);
 
 app.use(
   cors({
@@ -18,9 +22,24 @@ app.use(express.static("public"));
 
 app.use(cookieParser());
 
-app.get("/", (req, res) => {
-  res.send("Hello, world!");
+
+
+// verify user AccessToken
+io.use((socket, next) => {
+  verifyAccessToken(socket.handshake.query, null, next);
 });
+// if user Access tokent
+io.on("connection", (socket) => {
+  console.log(`User connected:${socket.id} `);
+  // Your socket connection logic goes here
+
+  socket.on("disconnect", () => {
+    console.log(`User disconnected: ${socket.id}`);
+  });
+});
+
+
+
 
 //routes imports
 import userRouter from "./routes/user.route.js";
@@ -31,4 +50,4 @@ import flatRouter from "./routes/flat.route.js";
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/flat", flatRouter);
 
-export { app };
+export { server };

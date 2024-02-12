@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import otpGenerator from "otp-generator";
 import { Otp } from "../models/otp.model.js";
-import { Users } from "../models/user.model.js";
+import { User } from "../models/user.model.js";
 
 const sendOpt = asyncHandler(async (req, res) => {
   const accountSid = process.env.TWILIO_ACCOUNT;
@@ -44,7 +44,7 @@ const sendOpt = asyncHandler(async (req, res) => {
 
 const generateAccessToken = async (userId) => {
   try {
-    const user = await Users.findById(userId);
+    const user = await User.findById(userId);
     const AccessToken = user.generateAccessToken();
     user.accessToken = AccessToken;
     await user.save({ validateBeforeSave: false });
@@ -80,9 +80,9 @@ const verifyOtp = asyncHandler(async (req, res) => {
     throw new ApiError(402, "OTP has expired");
   }
 
-  let user = await Users.findOne({ phoneNumber });
+  let user = await User.findOne({ phoneNumber });
   if (!user) {
-    user = await Users.create({
+    user = await User.create({
       name: `User${phoneNumber.substring(3, 8)}`,
       phoneNumber,
       gender,
@@ -95,7 +95,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
 
   const { AccessToken } = await generateAccessToken(user._id);
 
-  const verifiedUser = await Users.findById(user._id).select("-accessToken");
+  const verifiedUser = await User.findById(user._id).select("-accessToken");
   if (!verifiedUser) {
     throw new ApiError(402, "Something went wrong while creating user");
   }
@@ -121,7 +121,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  await Users.findByIdAndUpdate(
+  await User.findByIdAndUpdate(
     req.user._id,
     {
       $set: {

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema(
   {
@@ -18,9 +18,9 @@ const userSchema = new mongoose.Schema(
       index: true,
       unique: true,
     },
-    
-    favouriteFlats: [{ type: Schema.Types.ObjectId, ref: "flats" }],
-    ownflats: [{ type: Schema.Types.ObjectId, ref: "flats" }],
+    rooms: [{ type: mongoose.Schema.Types.ObjectId, ref: "Room" }],
+    favouriteFlats: [{ type: Schema.Types.ObjectId, ref: "Flat" }],
+    ownflats: [{ type: Schema.Types.ObjectId, ref: "Flat" }],
 
     accessToken: {
       type: String,
@@ -29,19 +29,18 @@ const userSchema = new mongoose.Schema(
   { timeseries: true }
 );
 
-userSchema.methods.generateAccessToken = function(){
+userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
-      {
-          _id: this._id,
-          phoneNumber: this.phoneNumber,
-          name: this.name,
-      },
-      process.env.ACCESS_TOKEN_SECRET,
-      {
-          expiresIn: process.env.ACCESS_TOKEN_EXPIRY
-      }
-  )
-}
+    {
+      _id: this._id,
+      phoneNumber: this.phoneNumber,
+      name: this.name,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+    }
+  );
+};
 
-
-export const Users = mongoose.model("User", userSchema);
+export const User = mongoose.model("User", userSchema);

@@ -209,7 +209,7 @@ const fetchFlat = asyncHandler(async (req, res) => {
   const userId = req.header("userId");
 
   const user = await Users.findById(userId);
-  const sort = 1;
+  let sort = 1;
   if (sortby == "hightolow") {
     sort = -1;
   }

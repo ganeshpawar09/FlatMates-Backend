@@ -198,25 +198,21 @@ const removeFlatFromFavourite = asyncHandler(async (req, res) => {
 });
 
 const fetchFlat = asyncHandler(async (req, res) => {
-  const {
-    min = 0,
-    max = 100000,
-    page = 0,
-    limit = 3,
-    search = "",
-    sortby = "lowtohigh",
-    preference = "any",
-  } = req.query;
-  const sort = sortby === "hightolow" ? -1 : 1;
+  const min = parseInt(req.query.min) || 0;
+  const max = parseInt(req.query.max) || 100000;
+  const page = parseInt(req.query.page) || 0;
+  const limit = parseInt(req.query.limit) || 3;
+  const search = req.query.search || "";
+  const sortby = req.query.sortby || "lowtohigh";
+  const preference = req.query.preference || "any";
 
   const userId = req.header("userId");
 
   const user = await Users.findById(userId);
-
-  if (!user) {
-    throw new ApiError(404, "User Not Found");
+  const sort = 1;
+  if (sortby == "hightolow") {
+    sort = -1;
   }
-
   const pipeline = [];
 
   if (preference === "male" || preference === "female") {
@@ -242,17 +238,18 @@ const fetchFlat = asyncHandler(async (req, res) => {
       rent: sort,
     },
   });
-
   pipeline.push({
     $skip: page * limit,
   });
-
   pipeline.push({
     $limit: limit,
   });
 
   const result = await Flats.aggregate(pipeline);
 
+  if (!user) {
+    throw new ApiError(404, "User Not Found");
+  }
   result.forEach((element) => {
     if (user.favouriteFlats.includes(element._id)) {
       element.favourite = true;

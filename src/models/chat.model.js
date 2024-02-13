@@ -12,6 +12,7 @@ const chatSchema = new mongoose.Schema({
   lastmessage: {
     type: String,
   },
+  flat: { type: mongoose.Schema.Types.ObjectId, ref: "Flat" },
   messages: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }],
 });
 

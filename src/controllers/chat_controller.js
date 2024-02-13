@@ -6,19 +6,23 @@ import { Message } from "../models/message_model.js";
 import { User } from "../models/user.model.js";
 
 const createNewChat = asyncHandler(async (req, res) => {
-  const { userId, ownerId } = req.body;
-  if (!userId || !ownerId) {
-    throw new ApiError(400, "userId and ownerId is required");
+  const { userId, ownerId,flatId } = req.body;
+  if (!userId || !ownerId || flatId) {
+    throw new ApiError(400, "userId, ownerId and flatId is required");
   }
 
   const user = await User.findById(userId);
   const owner = await User.findById(ownerId);
+  const flat = await User.findById(flatId);
 
   if (!user) {
     throw new ApiError(404, "User Not Found");
   }
   if (!owner) {
     throw new ApiError(404, "Owner Not Found");
+  }
+  if (!flat) {
+    throw new ApiError(404, "Flat Not Found");
   }
   let chat = await Chat.findOne({
     $or: [
@@ -33,6 +37,7 @@ const createNewChat = asyncHandler(async (req, res) => {
   chat = await Chat.create({
     name: `${user.name} and ${owner.name}`,
     customId: newId,
+    flat:flat,
     messages: [],
   });
 

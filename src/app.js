@@ -28,24 +28,27 @@ app.use(cookieParser());
 
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
-  io.emit("newMember", `Socket:${socket.id} is connected to server`);
+
+  // Handle user connection
   socket.on("user_connect", async ({ userId }) => {
     try {
       console.log(userId);
 
-      const user = await User.findByIdAndUpdate(userId, {
-        $set: { socketId: socket.id },
-      });
+      const user = await User.findById(userId);
 
       if (user) {
+        // Update the socketId for the user
+        await User.findByIdAndUpdate(userId, {
+          $set: { socketId: socket.id },
+        });
+
+        // Join each chat room the user is a member of
         user.chats.forEach((chatId) => {
           socket.join(chatId);
-          console.log(`Ganesh joined room: ${chatId}`);
           io.to(chatId).emit(
             "newMemberInChat",
             `userName${user.name} room id${chatId}`
           );
-          console.log(`Emitted newMemberInChat to room: ${chatId}`);
         });
       } else {
         console.log("User not found");
@@ -54,6 +57,35 @@ io.on("connection", (socket) => {
       console.error("Error updating user:", error);
     }
   });
+
+  // Handle sending messages
+  socket.on("sendMessage", async ({ chatId, content, senderId }) => {
+    try {
+      const chat = await Chat.findById(chatId);
+
+      if (chat) {
+        const message = new Message({
+          content: content,
+          sender: senderId,
+        });
+
+        await message.save();
+        chat.messages.push(message);
+        await chat.save();
+
+        console.table([chatId, content, senderId]);
+
+        // Emit the new message to all users in the chat room
+        io.to(chatId).emit("newMessage", { message });
+      } else {
+        console.log("Chat not found");
+      }
+    } catch (error) {
+      console.error("Error storing message:", error);
+    }
+  });
+
+  // Handle user disconnection
   socket.on("disconnect", () => {
     console.log(`Socket id: ${socket.id} is disconnected`);
   });

@@ -9,7 +9,7 @@ import { Flat } from "../models/flat.model.js";
 const createNewChat = asyncHandler(async (req, res) => {
   const { userId, ownerId, flatId } = req.body;
   if (!userId || !ownerId || !flatId) {
-    throw new ApiError(400, "userId, ownerId and flatId is required");
+    throw new ApiError(400, "userId, ownerId, and flatId are required");
   }
 
   const user = await User.findById(userId);
@@ -25,20 +25,24 @@ const createNewChat = asyncHandler(async (req, res) => {
   if (!flat) {
     throw new ApiError(404, "Flat Not Found");
   }
-  if(user.id===owner.id)
-  {
+  if (user.id === owner.id) {
     throw new ApiError(400, "You are the owner");
   }
+
   let chat = await Chat.findOne({
     $or: [
-      { customId: `${userId + ownerId}` },
-      { customId: `${ownerId + userId}` },
+      { customId: `${userId}${ownerId}` },
+      { customId: `${ownerId}${userId}` },
     ],
   });
+
   if (chat) {
-    res.status(200).json(new ApiResponse(200, chat, "Chat already exist"));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, chat, "Chat already exists"));
   }
-  const newId = `${userId + ownerId}`;
+
+  const newId = `${userId}${ownerId}`;
   chat = await Chat.create({
     name: `${user.name} and ${owner.name}`,
     customId: newId,
@@ -54,6 +58,7 @@ const createNewChat = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, chat, "New Chat created"));
   }
 });
+
 const fetchChat = asyncHandler(async (req, res) => {
   const userId = req.header("userId");
   const user = await User.findById(userId);

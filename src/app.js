@@ -12,11 +12,7 @@ const io = new Server(server, {
   },
 });
 
-const corsOptions = {
-  origin: process.env.CORS_ORIGIN || "*",
-};
-
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: process.env.CORS_ORIGIN }));
 
 app.use(cookieParser());
 

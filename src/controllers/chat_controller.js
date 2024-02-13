@@ -28,7 +28,6 @@ const createNewChat = asyncHandler(async (req, res) => {
   if(user.id===owner.id)
   {
     throw new ApiError(400, "You are the owner");
-
   }
   let chat = await Chat.findOne({
     $or: [

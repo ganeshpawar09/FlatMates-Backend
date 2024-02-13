@@ -25,6 +25,11 @@ const createNewChat = asyncHandler(async (req, res) => {
   if (!flat) {
     throw new ApiError(404, "Flat Not Found");
   }
+  if(user.id===owner.id)
+  {
+    throw new ApiError(400, "You are the owner");
+
+  }
   let chat = await Chat.findOne({
     $or: [
       { customId: `${userId + ownerId}` },

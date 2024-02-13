@@ -5,12 +5,12 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 
 const app = express();
-// const server = createServer(app);
-// const io = new Server(server, {
-//   cors: {
-//     origin: "*",
-//   },
-// });
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
 
 app.use(
   cors({
@@ -26,41 +26,46 @@ app.use(express.static("public"));
 
 app.use(cookieParser());
 
-// if user Access tokent
-// io.on("connection", (socket) => {
-//   console.log(`User connected:${socket.id} `);
+io.on("connection", (socket) => {
+  console.log(`User connected: ${socket.id}`);
+  io.emit("newMember", `Socket:${socket.id} is connected to server`);
+  socket.on("user_connect", async ({ userId }) => {
+    try {
+      console.log(userId);
 
-//   socket.on("user_connect", async (userId) => {
-//     const user = User.findByIdAndUpdate(userId, {
-//       $set: { socketId: socket.id },
-//     });
-//     user.rooms.forEach((room) => {
-//       socket.join(room.customId);
-//     });
-//   });
-//   socket.on("join_new_room", async (roomId) => {
-//     socket.join(roomId);
-//   });
-//   socket.on("message", async (roomId, message, senderId) => {
-//     const room = Room.findById(roomId);
-//     const m = new Message({ content: message, sender: senderId });
-//   });
+      const user = await User.findByIdAndUpdate(userId, {
+        $set: { socketId: socket.id },
+      });
 
-//   socket.on("disconnect", async (userId) => {
-//     const user = await User.findById(userId);
-//     user.rooms.forEach((room) => {
-//       socket.leave(room.customId);
-//     });
-//   });
-// });
-
-
+      if (user) {
+        user.chats.forEach((chatId) => {
+          socket.join(chatId);
+          console.log(`Ganesh joined room: ${chatId}`);
+          io.to(chatId).emit(
+            "newMemberInChat",
+            `userName${user.name} room id${chatId}`
+          );
+          console.log(`Emitted newMemberInChat to room: ${chatId}`);
+        });
+      } else {
+        console.log("User not found");
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
+  });
+  socket.on("disconnect", () => {
+    console.log(`Socket id: ${socket.id} is disconnected`);
+  });
+});
 
 //routes imports
 import userRouter from "./routes/user.route.js";
 import flatRouter from "./routes/flat.route.js";
 import chatRouter from "./routes/chat.route.js";
-
+import { User } from "./models/user.model.js";
+import { Message } from "./models/message_model.js";
+import { Chat } from "./models/chat.model.js";
 
 //routes declartion
 
@@ -68,4 +73,69 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/flat", flatRouter);
 app.use("/api/v1/chat", chatRouter);
 
-export { app };
+export { server };
+
+//
+// socket.on("joinRoom", ({ roomId }) => {
+//   console.log(`Received request to join room: ${roomId}`);
+
+//   socket.join(roomId);
+// });
+
+// socket.on("sendMessage", async ({ chatId, content, senderId }) => {
+//   try {
+//     const chat = await Chat.findById(chatId);
+//     if (chat) {
+//       const message = new Message({
+//         content: content,
+//         sender: senderId,
+//       });
+//       await message.save();
+//       chat.messages.push(message);
+//       await chat.save();
+//       console.table([chatId, content, senderId]);
+//       io.to(chatId).emit("newMessage", { message });
+//     } else {
+//       console.log("Something went wrong while sending message");
+//     }
+//   } catch (error) {
+//     console.error("Error storing message:", error);
+//   }
+// });
+
+// socket.on("newMessage", ({ message }) => {
+//   console.log("New message received:", message);
+// });
+// socket.on("connect_to_chat", async (otherUserId, chatId) => {
+//   try {
+//     console.log(chatId);
+
+//     const user = await User.findById(otherUserId);
+//     socket.join(chatId);
+
+//     if (user) {
+//       io.to(user.socketId).emit("join_room", { roomId });
+//     } else {
+//       console.log("User not found");
+//     }
+//   } catch (error) {
+//     console.error("Error updating user:", error);
+//   }
+// });
+
+// socket.on("user_disconnect", async (userId) => {
+//   try {
+//     const user = await User.findById(userId);
+
+//     if (user) {
+//       user.chats.forEach((chatId) => {
+//         socket.leave(chatId);
+//         console.log(chatId);
+//       });
+//     } else {
+//       console.log("User not found");
+//     }
+//   } catch (error) {
+//     console.error("Error finding user:", error);
+//   }
+// });

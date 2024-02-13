@@ -15,6 +15,9 @@ const userSchema = new mongoose.Schema(
       index: true,
       unique: true,
     },
+    socketId: {
+      type: String,
+    },
     chats: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
     favouriteFlats: [{ type: Schema.Types.ObjectId, ref: "Flat" }],
     ownflats: [{ type: Schema.Types.ObjectId, ref: "Flat" }],

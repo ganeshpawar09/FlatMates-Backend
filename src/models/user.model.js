@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
     socketId: {
       type: String,
     },
-    chats: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
+    chats: [{ type: String }],
     favouriteFlats: [{ type: Schema.Types.ObjectId, ref: "Flat" }],
     ownflats: [{ type: Schema.Types.ObjectId, ref: "Flat" }],
 

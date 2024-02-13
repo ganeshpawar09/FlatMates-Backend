@@ -29,7 +29,6 @@ app.use(cookieParser());
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
 
-  // Handle user connection
   socket.on("user_connect", async ({ userId }) => {
     try {
       console.log(userId);
@@ -37,14 +36,13 @@ io.on("connection", (socket) => {
       const user = await User.findById(userId);
 
       if (user) {
-        // Update the socketId for the user
-        await User.findByIdAndUpdate(userId, {
-          $set: { socketId: socket.id },
-        });
+        user.socketId = socket.id;
+        await user.save();
 
-        // Join each chat room the user is a member of
         user.chats.forEach((chatId) => {
           socket.join(chatId);
+          const roomSize = io.sockets.adapter.rooms.get(chatId).size;
+          console.log(`Number of sockets in room: ${roomSize} ${chatId}`);
           io.to(chatId).emit(
             "newMemberInChat",
             `userName${user.name} room id${chatId}`
@@ -57,8 +55,6 @@ io.on("connection", (socket) => {
       console.error("Error updating user:", error);
     }
   });
-
-  // Handle sending messages
   socket.on("sendMessage", async ({ chatId, content, senderId }) => {
     try {
       const chat = await Chat.findById(chatId);
@@ -73,10 +69,7 @@ io.on("connection", (socket) => {
         chat.messages.push(message);
         await chat.save();
 
-        console.table([chatId, content, senderId]);
-
-        // Emit the new message to all users in the chat room
-        io.to(chatId).emit("newMessage", { message });
+        io.to(chatId).emit("newMessage", message);
       } else {
         console.log("Chat not found");
       }
@@ -85,7 +78,24 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Handle user disconnection
+  socket.on("user_disconnect", async ({ userId }) => {
+    try {
+      console.log(userId);
+
+      const user = await User.findById(userId);
+
+      if (user) {
+        user.chats.forEach((chatId) => {
+          socket.leave(chatId);
+        });
+      } else {
+        console.log("User not found");
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
+  });
+
   socket.on("disconnect", () => {
     console.log(`Socket id: ${socket.id} is disconnected`);
   });

@@ -4,16 +4,17 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Message } from "../models/message_model.js";
 import { User } from "../models/user.model.js";
+import { Flat } from "../models/flat.model.js";
 
 const createNewChat = asyncHandler(async (req, res) => {
-  const { userId, ownerId,flatId } = req.body;
-  if (!userId || !ownerId || flatId) {
+  const { userId, ownerId, flatId } = req.body;
+  if (!userId || !ownerId || !flatId) {
     throw new ApiError(400, "userId, ownerId and flatId is required");
   }
 
   const user = await User.findById(userId);
   const owner = await User.findById(ownerId);
-  const flat = await User.findById(flatId);
+  const flat = await Flat.findById(flatId);
 
   if (!user) {
     throw new ApiError(404, "User Not Found");
@@ -37,13 +38,13 @@ const createNewChat = asyncHandler(async (req, res) => {
   chat = await Chat.create({
     name: `${user.name} and ${owner.name}`,
     customId: newId,
-    flat:flat,
+    flat: flat,
     messages: [],
   });
 
   if (chat) {
-    user.chats.push(chat);
-    owner.chats.push(chat);
+    user.chats.push(chat.id);
+    owner.chats.push(chat.id);
     await user.save();
     await owner.save();
     return res.status(200).json(new ApiResponse(200, chat, "New Chat created"));

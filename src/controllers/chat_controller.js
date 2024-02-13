@@ -51,29 +51,30 @@ const fetchChat = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(404, "User Not Found");
   }
-
   const chatPromises = user.chats.map(async (chatId) => {
-    const chat = await Chat.findById(chatId);
-
-    if (!chat) {
-      throw new ApiError(404, `Chat with id ${chatId} not found`);
-    }
-
-    const messagePromises = chat.messages.map(async (messageId) => {
-      return await Message.findById(messageId);
-    });
-
-    const message = await Promise.all(messagePromises);
-    chat.messages = message;
-
-    return {
-      chat,
-    };
+    return await Chat.find(chatId);
   });
 
   const chats = await Promise.all(chatPromises);
 
   return res.status(200).json(new ApiResponse(200, chats, "Success"));
+});
+
+const fetchMessages = asyncHandler(async (req, res) => {
+  const chatId = req.header("chatId");
+  const chat = await Chat.findById(chatId);
+
+  if (!chat) {
+    throw new ApiError(404, "Chat Not Found");
+  }
+
+  const messagePromises = chat.messages.map(async (messageId) => {
+    return await Message.findById(messageId);
+  });
+
+  const messages = await Promise.all(messagePromises);
+
+  return res.status(200).json(new ApiResponse(200, messages, "Success"));
 });
 
 const sendMessage = asyncHandler(async (req, res) => {
@@ -103,4 +104,4 @@ const sendMessage = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, message, "New message send Added"));
 });
 
-export { createNewChat, fetchChat, sendMessage };
+export { createNewChat, fetchChat, fetchMessages, sendMessage };

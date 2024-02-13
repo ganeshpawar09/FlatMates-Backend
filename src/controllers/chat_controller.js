@@ -51,8 +51,9 @@ const fetchChat = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(404, "User Not Found");
   }
+
   const chatPromises = user.chats.map(async (chatId) => {
-    return await Chat.find(chatId);
+    return await Chat.findById(chatId); // Use findById instead of find
   });
 
   const chats = await Promise.all(chatPromises);

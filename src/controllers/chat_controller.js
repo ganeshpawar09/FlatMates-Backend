@@ -120,4 +120,4 @@ const sendMessage = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, message, "New message send Added"));
 });
 
-export { createNewChat, fetchChat, fetchMessages, sendMessage };
+export { createNewChat, fetchChat, fetchMessages, sendMessage};

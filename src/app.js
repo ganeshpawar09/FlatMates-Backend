@@ -55,7 +55,7 @@ io.on("connection", (socket) => {
       console.error("Error updating user:", error);
     }
   });
-  socket.on("sendMessage", async ({ chatId, content, senderId }) => {
+  socket.on("sendMessage", async ({ chatId, content, senderId, userName }) => {
     try {
       console.table([chatId, content, senderId]);
       const chat = await Chat.findById(chatId);
@@ -70,7 +70,7 @@ io.on("connection", (socket) => {
         chat.messages.push(message);
         await chat.save();
 
-        io.to(chatId).emit("newMessage", message);
+        io.to(chatId).emit("newMessage", { message, userName  });
       } else {
         console.log("Chat not found");
       }

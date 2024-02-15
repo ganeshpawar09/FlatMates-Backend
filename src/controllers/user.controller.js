@@ -120,8 +120,9 @@ const verifyOtp = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
+  const userId = req.body.userId;
   await User.findByIdAndUpdate(
-    req.user._id,
+    userId,
     {
       $set: {
         accessToken: "",
@@ -168,4 +169,4 @@ const updateUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, updatedUser, "User Sucessfully updated"));
 });
 
-export { sendOpt, verifyOtp , logoutUser ,updateUser};
+export { sendOpt, verifyOtp, logoutUser, updateUser };

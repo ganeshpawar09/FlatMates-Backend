@@ -5,6 +5,7 @@ import {
   deleteFlat,
   fetchFavouriteFlat,
   fetchFlat,
+  fetchOwnFlat,
   removeFlatFromFavourite,
   updateFlat,
   uploadFlat,
@@ -28,5 +29,6 @@ flatRouter.route("/fetch-flat").get(verifyAccessToken, fetchFlat);
 flatRouter
   .route("/fetch-favourite-flat")
   .get(verifyAccessToken, fetchFavouriteFlat);
+flatRouter.route("/fetch-own-flat").get(verifyAccessToken, fetchOwnFlat);
 
 export default flatRouter;

@@ -70,7 +70,7 @@ io.on("connection", (socket) => {
         chat.messages.push(message);
         await chat.save();
 
-        io.to(chatId).emit("newMessage", { message, userName  });
+        io.to(chatId).emit("newMessage", { message, userName });
       } else {
         console.log("Chat not found");
       }

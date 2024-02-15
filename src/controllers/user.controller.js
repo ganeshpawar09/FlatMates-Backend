@@ -150,7 +150,7 @@ const updateUser = asyncHandler(async (req, res) => {
     throw new ApiError(402, "UserId required to update user");
   }
 
-  const updatedUser = await Users.findByIdAndUpdate(
+  const updatedUser = await User.findByIdAndUpdate(
     userId,
     {
       $set: updateData,
@@ -168,4 +168,4 @@ const updateUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, updatedUser, "User Sucessfully updated"));
 });
 
-export { sendOpt, verifyOtp as verify, logoutUser as logout };
+export { sendOpt, verifyOtp , logoutUser ,updateUser};

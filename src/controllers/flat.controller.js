@@ -282,6 +282,24 @@ const fetchFavouriteFlat = asyncHandler(async (req, res) => {
 
   return res.status(200).json(new ApiResponse(200, favFlats, "Success"));
 });
+const fetchOwnFlat = asyncHandler(async (req, res) => {
+  const userId = req.header("userId");
+  const user = await User.findById(userId);
+
+  const flats = await Flat.find();
+  if (!user) {
+    throw new ApiError(404, "User Not Found");
+  }
+
+  const own = [];
+  flats.forEach((element) => {
+    if (user.ownflats.includes(element._id)) {
+      own.push(element);
+    }
+  });
+
+  return res.status(200).json(new ApiResponse(200, own, "Success"));
+});
 
 export {
   uploadFlat,
@@ -291,4 +309,5 @@ export {
   removeFlatFromFavourite,
   fetchFlat,
   fetchFavouriteFlat,
+  fetchOwnFlat
 };
